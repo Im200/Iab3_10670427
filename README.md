@@ -1,32 +1,29 @@
 # Iab3_10670427
-#include<iostream.h>
-#include<mpi.h>
-int main(int argc, char * argv[])
-{ int i; int nitems = 10;
-int mynode,
-totalnodes; MPI_Status
-status; double *
-array;
+#include <iostream>
+#include <mpi.h>
+
+
+int main(int argc, char ** argv)
+{ 
+int mynode, totalnodes, datasize; 
+int sender=2; 
+int receiver=4;
+int tag;
+MPI_Status status;
+
 MPI_Init(&argc,&argv);
 MPI_Comm_size(MPI_COMM_WORLD, &totalnodes);
 MPI_Comm_rank(MPI_COMM_WORLD, &mynode);
-array = new double[nitems];
-if(mynode == 0)
-{
-for(i=0;i<nitems;i++)
-array[i] = (double) i;
-}
-if(mynode==0)
-for(i=1;i<totalnodes;i++)
-MPI_Send(array,nitems,MPI_DOUBLE,i,1,MPI_COMM_WORLD);
-else
-MPI_Recv(array,nitems,MPI_DOUBLE,0,1,MPI_COMM_WORLD,
-&status);
-for(i=0;i<nitems;i++)
-{
-cout << "Processor " << mynode;
-cout << ": array[" << i << "] = " << array[i] <<
-endl;
-}
+
+double * databuffer = new double[datasize];
+
+if(mynode==sender)
+ MPI_Send(databuffer,datasize,MPI_DOUBLE,receiver,tag,MPI_COMM_WORLD);
+
+if(mynode==receiver)
+MPI_Recv(databuffer,datasize,MPI_DOUBLE,sender,tag,MPI_COMM_WORLD,&status);
+
 MPI_Finalize();
+
+ return 0;
 }
